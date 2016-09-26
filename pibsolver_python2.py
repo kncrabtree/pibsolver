@@ -44,11 +44,11 @@ xmax = 5.0
 #number of grid points at which to calculate integral
 #must be an odd number. If an even number is given, 1 will be added.
 #minimum number of grid points is 3
-ngrid = 251
+ngrid = 101
 
 #number of PIB wavefunctions to include in basis set
 #minimum is 1
-nbasis = 50
+nbasis = 00
 
 #if you want to control the plot ranges, you can do so here
 make_plots = True
@@ -60,9 +60,8 @@ plotxmax = 0
 #the units of energy are hbar*omega, so we'll let hbar equal 1 and calculate omega from mass and fk
 #While mass and hbar are used in the Hamiltonian calculation for all potentials, the units of hbar*omega only apply to the harmonic oscillator
 #For other potentials, let fk=1 and hbar=1
-mass = 1
-nubar = 3600.
-hbar = 1.
+mass = 1.0
+hbar = 1.0
 fk = 1.0
 omega = math.sqrt(fk/mass)
 
@@ -170,7 +169,7 @@ for i in range(0,nbasis):
 
 #Solve for eigenvalues and eigenvectors
 evalues, evectors = linalg.eigh(H)
-evalues = evalues*nubar
+evalues = evalues*(hbar*omega)
 
 #get ending time
 endtime = datetime.datetime.now()
@@ -215,7 +214,7 @@ if make_plots == True:
     
     plt.plot(evalues,'ro')
     plt.xlabel('v')
-    plt.ylabel(r'E (cm$^{-1}$)')
+    plt.ylabel(r'E ($\hbar\omega$)')
     plt.title(title)
     plt.savefig(spectrumfile)
     plt.show()
@@ -225,7 +224,7 @@ if make_plots == True:
     title = "Wfns, Min={0}, Max={1}, Grid={2}, Basis={3}".format(xmin,xmax,ngrid,nbasis)
     vplot = numpy.zeros(x.size)
     for i in range(0,x.size):
-        vplot[i] = V(x[i])*nubar
+        vplot[i] = V(x[i])
     plt.plot(x,vplot)
     
     if plotxmin == 0:
@@ -258,7 +257,7 @@ if make_plots == True:
     plt.axis([plotxmin,plotxmax,plotymin,plotymax])
     plt.title(title)
     plt.xlabel('$x-x_0$ $(\sqrt{\hbar/m\omega})$')
-    plt.ylabel(r'V (cm$^{-1}$)')
+    plt.ylabel(r'V ($\hbar\omega$)')
     plt.savefig(potentialfile)
     plt.show()
 

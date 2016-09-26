@@ -67,7 +67,7 @@ fk = 1901.995
 omega = math.sqrt(fk/mass)
 
 #morse potential parameters
-de = 90546
+de = 90546.0
 alpha = math.sqrt(fk/2/de)
 
 #output file for eigenvalues
