@@ -236,12 +236,15 @@ if make_plots == True:
     if(plotxmin > plotxmax):
     	plotxmin, plotxmax = plotxmax,plotxmin
     if plotymax == 0:
-    #	plotymax = max(V(plotxmin),V(plotxmax))
-          plotymax = evalues[10]
+    	plotymax = max(V(plotxmin),V(plotxmax))
     if(plotymin > plotymax):
     	plotymin, plotymax = plotymax,plotymin
     
-    sf = evalues[1]-evalues[0]
+    if nbasis>1:
+        sf = evalues[1]-evalues[0]
+    else:
+        sf = 1.        
+    
     for i in range(0,nbasis):
     	plt.plot([xmin,xmax],[evalues[i],evalues[i]],'k-')
     for i in range(0,nbasis):
