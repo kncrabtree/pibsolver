@@ -34,21 +34,21 @@ import datetime
 #---------------------------
 
 #minimum x value for partice in a box calculation
-xmin = -1.0
+xmin = -10.0
 
 #maximum x value for particle in a box calculation
 #there is no limit, but if xmax<xmin, the values will be swapped
 #if xmax = xmin, then xmax will be set to xmin + 1
-xmax = 15.0
+xmax = 10.0
 
 #number of grid points at which to calculate integral
 #must be an odd number. If an even number is given, 1 will be added.
 #minimum number of grid points is 3
-ngrid = 501
+ngrid = 251
 
 #number of PIB wavefunctions to include in basis set
 #minimum is 1
-nbasis = 200
+nbasis = 50
 
 #if you want to control the plot ranges, you can do so here
 make_plots = True
@@ -60,15 +60,15 @@ plotxmax = 0
 #the units of energy are hbar*omega, so we'll let hbar equal 1 and calculate omega from mass and fk
 #While mass and hbar are used in the Hamiltonian calculation for all potentials, the units of hbar*omega only apply to the harmonic oscillator
 #For other potentials, let fk=1 and hbar=1
-mass = 1.13864e-26
-nubar = 2169.756
-hbar = 1.0546e-34
-fk = 1901.995
+mass = 1.0
+nubar = 3600.0
+hbar = 1.0
+fk = 1.0
 omega = math.sqrt(fk/mass)
 
 #morse potential parameters
-de = 90546.0
-alpha = math.sqrt(fk/2/de)
+de = 10.0
+alpha = math.sqrt(fk/2.0/de)
 
 #output file for eigenvalues
 outfile = "eigenvalues.txt"
@@ -107,7 +107,7 @@ def doublewell(x):
 
 #potential function used for this calculation
 def V(x):
-	return morse(x)
+	return harmonic(x)
 
 #------------------------
 #   BEGIN CALCULATION   -
@@ -237,8 +237,8 @@ if make_plots == True:
     if(plotxmin > plotxmax):
     	plotxmin, plotxmax = plotxmax,plotxmin
     if plotymax == 0:
-    #	plotymax = max(V(plotxmin),V(plotxmax))
-          plotymax = evalues[10]
+    	plotymax = 1.25*de*nubar
+#          plotymax = evalues[10]
     if(plotymin > plotymax):
     	plotymin, plotymax = plotymax,plotymin
     
