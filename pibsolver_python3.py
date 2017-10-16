@@ -240,8 +240,8 @@ if make_plots == True:
     if(plotymin > plotymax):
     	plotymin, plotymax = plotymax,plotymin
     
-    if nbasis>1:
-        sf = evalues[1]-evalues[0]
+    if nbasis>2:
+        sf = (evalues[2]-evalues[0])/2.0
     else:
         sf = 1.        
     
