@@ -20,6 +20,7 @@
 #
 
 import scipy as sp
+import scipy.integrate as spi
 import scipy.constants as spc
 import math
 import numpy
@@ -32,11 +33,11 @@ import datetime
 #---------------------------
 
 #equilibrium bond length in Angstrom
-re = 0.96966
+re = 1.1199
 
 #effective mass in kg
 amu = spc.physical_constants['atomic mass constant'][0]
-mass = (1.*16./(1.+16.))*amu
+mass = (1.*12.)/(1.+12.)*amu
 
 #minimum x value for partice in a box calculation
 xmin = -1.0+re
@@ -63,10 +64,10 @@ plotxmin = 0
 plotxmax = 0
 
 #dissociation energy in cm-1
-de = 37778.617
+de = 27981.24
 
 #force constant in N / m
-fk = 774.7188418117737
+fk = 444.390248
 
 #angular frequency in rad/s
 omega = numpy.sqrt(fk/mass)
@@ -173,7 +174,7 @@ for i in range(0,nbasis):
 			for k in range(0,ngrid):
 				p = x[k]
 				y[k] += pib(p-xmin,i+1.,L)*V(p)*pib(p-xmin,j+1.,L)
-			H[i,j] += sp.integrate.simps(y,x)
+			H[i,j] += spi.simps(y,x)
 		else:
 			H[i,j] += H[j,i]
 
