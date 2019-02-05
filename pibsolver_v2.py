@@ -33,19 +33,19 @@ import datetime
 #---------------------------
 
 #equilibrium bond length in Angstrom
-re = 1.1199
+re = 1.6202
 
 #effective mass in kg
 amu = spc.physical_constants['atomic mass constant'][0]
-mass = (1.*12.)/(1.+12.)*amu
+mass = (48.*16.)/(48.+16.)*amu
 
-#minimum x value for partice in a box calculation
-xmin = -1.0+re
+#minimum x value for particle in a box calculation
+xmin = -0.7+re
 
 #maximum x value for particle in a box calculation
 #there is no limit, but if xmax<xmin, the values will be swapped
 #if xmax = xmin, then xmax will be set to xmin + 1
-xmax = 1.0+re
+xmax = 0.7+re
 
 #number of grid points at which to calculate integral
 #must be an odd number. If an even number is given, 1 will be added.
@@ -64,10 +64,10 @@ plotxmin = 0
 plotxmax = 0
 
 #dissociation energy in cm-1
-de = 27981.24
+de = 55910.
 
 #force constant in N / m
-fk = 444.390248
+fk = 719.8318
 
 #angular frequency in rad/s
 omega = numpy.sqrt(fk/mass)
@@ -132,8 +132,8 @@ L = xmax - xmin
 #function to compute normalized PIB wavefunction
 tl = numpy.sqrt(2./L)
 pixl = numpy.pi/L
-def pib(x,n,L):
-	return tl*math.sin(n*x*pixl)
+def pib(x,n):
+	return tl*numpy.sin(n*x*pixl)
 
 ngrid = max(ngrid,3)
 
@@ -170,10 +170,7 @@ for i in range(0,nbasis):
 for i in range(0,nbasis):
 	for j in range(0,nbasis):
 		if j >= i:
-			y = numpy.zeros(ngrid)
-			for k in range(0,ngrid):
-				p = x[k]
-				y[k] += pib(p-xmin,i+1.,L)*V(p)*pib(p-xmin,j+1.,L)
+			y = pib(x-xmin,i+1.)*V(x)*pib(x-xmin,j+1.)
 			H[i,j] += spi.simps(y,x)
 		else:
 			H[i,j] += H[j,i]
@@ -270,8 +267,7 @@ if make_plots == True:
     	ef = numpy.zeros(ngrid)
     	ef += evalues[i]
     	for j in range(0,nbasis):
-    		for k in range(0,ngrid):
-    			ef[k] += evectors[j,i]*pib(x[k]-xmin,j+1,L)*sf
+            ef += evectors[j,i]*pib(x-xmin,j+1)*sf
     	plt.plot(x,ef)
     
     plt.plot([xmin,xmin],[plotymin,plotymax],'k-')

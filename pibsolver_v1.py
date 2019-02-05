@@ -98,7 +98,7 @@ def anharmonic(x):
 
 #Morse potential (Note, try a box of -0.4, 5 to begin)
 def morse(x):
-	return de*(1.-math.exp(-alpha*x))**2.
+	return de*(1.-numpy.exp(-alpha*x))**2.
 
 #double well potential (minima at x = +/-3)
 def doublewell(x):
@@ -112,17 +112,11 @@ def V(x):
 #   BEGIN CALCULATION   -
 #------------------------
 
-#function to compute normalized PIB wavefunction
-def pib(x,n,L):
-	return math.sqrt(2./L)*math.sin(n*math.pi*x/L)
-
 #verify that inputs are sane
 if xmax==xmin:
 	xmax = xmin+1
 elif xmax<xmin:
 	xmin,xmax = xmax,xmin
-
-L = xmax - xmin
 
 ngrid = max(ngrid,3)
 
@@ -130,6 +124,15 @@ if ngrid%2 == 0:
 	ngrid+=1
 
 nbasis = max(1,nbasis)
+
+
+#function to compute normalized PIB wavefunction
+L = xmax - xmin
+tl = numpy.sqrt(2./L)
+pixl = numpy.pi/L
+def pib(x,n):
+	return tl*numpy.sin(n*x*pixl)
+
 
 #get current time
 starttime = datetime.datetime.now()
@@ -158,10 +161,7 @@ for i in range(0,nbasis):
 for i in range(0,nbasis):
 	for j in range(0,nbasis):
 		if j >= i:
-			y = numpy.zeros(ngrid)
-			for k in range(0,ngrid):
-				p = x[k]
-				y[k] += pib(p-xmin,i+1.,L)*V(p)*pib(p-xmin,j+1.,L)
+			y = pib(x-xmin,i+1.)*V(x)*pib(x-xmin,j+1.)
 			H[i,j] += integrate.simps(y,x)
 		else:
 			H[i,j] += H[j,i]
@@ -251,8 +251,7 @@ if make_plots == True:
     	ef = numpy.zeros(ngrid)
     	ef += evalues[i]
     	for j in range(0,nbasis):
-    		for k in range(0,ngrid):
-    			ef[k] += evectors[j,i]*pib(x[k]-xmin,j+1,L)*sf
+   			ef += evectors[j,i]*pib(x-xmin,j+1)*sf
     	plt.plot(x,ef)
     
     plt.plot([xmin,xmin],[plotymin,plotymax],'k-')

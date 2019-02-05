@@ -113,8 +113,8 @@ L = xmax - xmin
 #function to compute normalized PIB wavefunction
 tl = numpy.sqrt(2./L)
 pixl = numpy.pi/L
-def pib(x,n,L):
-	return tl*math.sin(n*x*pixl)
+def pib(x,n):
+	return tl*numpy.sin(n*x*pixl)
 
 ngrid = max(ngrid,3)
 
@@ -153,10 +153,7 @@ for i in range(0,nbasis):
 for i in range(0,nbasis):
 	for j in range(0,nbasis):
 		if j >= i:
-			y = numpy.zeros(ngrid)
-			for k in range(0,ngrid):
-				p = x[k]
-				y[k] += pib(p-xmin,i+1.,L)*V(p)*pib(p-xmin,j+1.,L)
+			y = pib(x-xmin,i+1.)*V(x)*pib(x-xmin,j+1.)
 			H[i,j] += sp.integrate.simps(y,x)
 		else:
 			H[i,j] += H[j,i]
@@ -252,8 +249,7 @@ if make_plots == True:
     	ef = numpy.zeros(ngrid)
     	ef += evalues[i]
     	for j in range(0,nbasis):
-    		for k in range(0,ngrid):
-    			ef[k] += evectors[j,i]*pib(x[k]-xmin,j+1,L)*sf
+    		ef += evectors[j,i]*pib(x-xmin,j+1)*sf
     	plt.plot(x,ef)
     
     plt.plot([xmin,xmin],[plotymin,plotymax],'k-')
