@@ -21,6 +21,7 @@
 
 import scipy as sp
 import scipy.constants as spc
+import scipy.interpolate as spi
 import math
 import numpy
 from matplotlib import pyplot as plt
@@ -32,7 +33,7 @@ import datetime
 #---------------------------
 
 #potential filename
-potfile = "nh3_ccsd(t)_cc-pvtz.txt"
+potfile = "nh3_scf_6-311G.txt"
 
 #optimized bond length (in Angstrom)
 re = 1.0112
@@ -87,7 +88,7 @@ with open(potfile,"r") as pf:
         
 angles = numpy.asarray(xl)
 pot = numpy.asarray(yl)
-V = sp.interpolate.CubicSpline(angles,pot,extrapolate=True)
+V = spi.CubicSpline(angles,pot,extrapolate=True)
 
 #minimum x value for partice in a box calculation
 xmin = xl[0]-0.1
