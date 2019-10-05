@@ -24,7 +24,6 @@ from scipy import integrate
 import math
 import numpy
 import matplotlib
-matplotlib.use('PDF',warn=False)
 from matplotlib import pyplot as plt
 import datetime
 
