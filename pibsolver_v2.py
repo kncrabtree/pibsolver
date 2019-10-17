@@ -33,11 +33,11 @@ import datetime
 #---------------------------
 
 #equilibrium bond length in Angstrom
-re = 1.6202
+re = 1.568
 
 #effective mass in kg
 amu = spc.physical_constants['atomic mass constant'][0]
-mass = (48.*16.)/(48.+16.)*amu
+mass = (12.*32.)/(12.+32.)*amu
 
 #minimum x value for particle in a box calculation
 xmin = -0.7+re
@@ -50,11 +50,11 @@ xmax = 0.7+re
 #number of grid points at which to calculate integral
 #must be an odd number. If an even number is given, 1 will be added.
 #minimum number of grid points is 3
-ngrid = 501
+ngrid = 1001
 
 #number of PIB wavefunctions to include in basis set
 #minimum is 1
-nbasis = 100
+nbasis = 250
 
 #if you want to control the plot ranges, you can do so here
 make_plots = True
@@ -64,10 +64,10 @@ plotxmin = 0
 plotxmax = 0
 
 #dissociation energy in cm-1
-de = 55910.
+de = 59963.
 
 #force constant in N / m
-fk = 719.8318
+fk = 849.15918
 
 #angular frequency in rad/s
 omega = numpy.sqrt(fk/mass)
@@ -187,11 +187,11 @@ endtime = datetime.datetime.now()
 #    GENERATE OUTPUT    -
 #------------------------
 
-print("Results:")
+print("Results. Elapsed time: "+str(endtime-starttime))
 print("-------------------------------------")
 print("   v  Energy (cm-1)  Delta E (cm-1)  ")
 print("-------------------------------------")
-for i in range(min(40,len(evalues))):
+for i in range(min(20,len(evalues))):
     if i>0:
         deltae = evalues[i] - evalues[i-1]        
         print(" {:>3d}  {:>13.3f}  {:>14.3f}  ".format(i,evalues[i],deltae))
