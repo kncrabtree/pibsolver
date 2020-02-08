@@ -34,8 +34,8 @@ class PIBSolver:
         #        VARIABLES         -
         #---------------------------
         
-        self.re = 1.568
-        self.mass = (12.*32.)/(12.+32.)
+        self.re = 1.15077
+        self.mass = (14.*16.)/(14.+16.)
         
         #minimum x value for partice in a box calculation
         self.xmin = -0.7+self.re
@@ -48,11 +48,11 @@ class PIBSolver:
         #number of grid points at which to calculate integral
         #must be an odd number. If an even number is given, 1 will be added.
         #minimum number of grid points is 3
-        self.ngrid = 501
+        self.ngrid = 1001
         
         #number of PIB wavefunctions to include in basis set
         #minimum is 1
-        self.nbasis = 100
+        self.nbasis = 250
         
         #if you want to control the plot ranges, you can do so here
 #        make_plots = True
@@ -63,11 +63,11 @@ class PIBSolver:
         
 
         #force constant (N/m)
-        self.fk = 849.15918
+        self.fk = 1594.634
         
         
         #morse potential dissociation energy (cm-1)
-        self.de = 59963.
+        self.de = 52265.
         
         
         self.V = self.harmonic
