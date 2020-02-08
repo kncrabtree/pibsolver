@@ -33,11 +33,11 @@ import datetime
 #---------------------------
 
 #equilibrium bond length in Angstrom
-re = 1.568
+re = 1.15077
 
 #effective mass in kg
 amu = spc.physical_constants['atomic mass constant'][0]
-mass = (12.*32.)/(12.+32.)*amu
+mass = (14.*16.)/(14.+16.)*amu
 
 #minimum x value for particle in a box calculation
 xmin = -0.7+re
@@ -64,10 +64,10 @@ plotxmin = 0
 plotxmax = 0
 
 #dissociation energy in cm-1
-de = 59963.
+de = 52265
 
 #force constant in N / m
-fk = 849.15918
+fk = 1594.634
 
 #angular frequency in rad/s
 omega = numpy.sqrt(fk/mass)
@@ -278,7 +278,3 @@ if make_plots == True:
     plt.ylabel(r'V (cm$^{-1}$)')
     plt.savefig(potentialfile)
     plt.show()
-
-
-
-
