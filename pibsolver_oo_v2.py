@@ -33,8 +33,8 @@ class PIBSolver:
         # --------------------------- VARIABLES  -
         #        ---------------------------
 
-        self.re = 1.15077
-        self.mass = (14.*16.)/(14.+16.)
+        self.re = 1.749
+        self.mass = (24.*16.)/(24.+16.)
 
         # minimum x value for partice in a box calculation
         self.xmin = -0.7+self.re
@@ -61,10 +61,10 @@ class PIBSolver:
         self.plotxmax = 0
 
         # force constant (N/m)
-        self.fk = 1594.634
+        self.fk = 348.5465
 
         # morse potential dissociation energy (cm-1)
-        self.de = 52265.
+        self.de = 21373.
 
         self.V = self.harmonic
 
@@ -72,6 +72,8 @@ class PIBSolver:
         self.evectors = []
 
         self.print_vars()
+        
+        print(f'Perform a calculation with pb.calc(), or change any of the variables in the table above with pb.variable=x.\n\nExamples:\n\npb.fk=500.0\n\npb.V=\'morse\'\n\n')
 
     # --------------------------
     #  POTENTIAL DEFINITIONS  -
@@ -259,3 +261,6 @@ class PIBSolver:
         plt.xlabel('$x-x_0$ $(\sqrt{\hbar/m\omega})$')
         plt.ylabel(r'V ($\hbar\omega$)')
         plt.show()
+
+        
+print('PIBSolver initialized. Create a new object with "pb = PIBSolver()"')
