@@ -59,6 +59,8 @@ class PIBSolver:
         self.plotymax = 0
         self.plotxmin = 0
         self.plotxmax = 0
+        
+        self.plotevery = 1
 
         # force constant (N/m)
         self.fk = 348.5465
@@ -73,7 +75,7 @@ class PIBSolver:
 
         self.print_vars()
         
-        print(f'Perform a calculation with pb.calc(), or change any of the variables in the table above with pb.variable=x.\n\nExamples:\n\npb.fk=500.0\n\npb.V=\'morse\'\n\n')
+        print(f'Perform a calculation with pb.calc(), or change any of the variables in the table above with pb.variable=x.\n\nExamples:\n\npb.fk = 500.0\n\npb.xmin = pb.re - 0.4\n\npb.mass = (12.0*16.0)/(12.0+16.0)\n\npb.V = pb.morse\n\npb.V = pb.harmonic\n\nTo re-print the table, use pb.print_vars().')
 
     # --------------------------
     #  POTENTIAL DEFINITIONS  -
@@ -118,7 +120,8 @@ class PIBSolver:
               ["mass", self.mass, "fk", self.fk],
               ["de", self.de, "V", self.V.__name__],
               ["plotxmin", self.plotxmin, "plotxmax", self.plotxmax],
-              ["plotymin", self.plotymin, "plotymax", self.plotymax]]
+              ["plotymin", self.plotymin, "plotymax", self.plotymax],
+              ["plotevery",self.plotevery]]
 
         print(tabulate.tabulate(td))
 
@@ -177,7 +180,7 @@ class PIBSolver:
         endtime = datetime.datetime.now()
 
         print("Calculation completed in "+str(endtime-starttime))
-        print("Eigenvalues:")
+        print("Eigenvalues (pb.evalues):")
 
         pl = []
         rowlen = 5
@@ -200,19 +203,19 @@ class PIBSolver:
 
         plt.close('all')
 
-        plt.figure(1)
+        self.evals_fig = plt.figure(1)
         # Make graph of eigenvalue spectrum
         title = "EV Spectrum, Min={:.4f}, Max={:.4f}, Grid={:d}, Basis={:d}".format(
             self.xmin, self.xmax, self.ngrid, self.nbasis)
 
         plt.plot(self.evalues, 'ro')
         plt.xlabel('v')
-        plt.ylabel(r'E ($\hbar\omega$)')
+        plt.ylabel(r'E (cm$^{-1}$)')
         plt.title(title)
         plt.show()
 
         # Make graph with potential and eigenfunctions
-        plt.figure(2)
+        self.pot_fig = plt.figure(2)
         title = "Wfns, Min={:.4f}, Max={:.4f}, Grid={:d}, Basis={:d}".format(
             self.xmin, self.xmax, self.ngrid, self.nbasis)
         x = numpy.linspace(self.xmin, self.xmax, self.ngrid)
@@ -235,7 +238,7 @@ class PIBSolver:
         if(pxmin > pxmax):
             pxmin, pxmax = pxmax, pxmin
         if pymax == 0:
-            pymax = max(self.V(pxmin), self.V(pxmax))
+            pymax = 1.5*self.de
         if(pymin > pymax):
             pymin, pymax = pymax, pymin
 
@@ -244,10 +247,10 @@ class PIBSolver:
         else:
             sf = 1.
 
-        for i in range(0, self.nbasis):
+        for i in range(0, self.nbasis, self.plotevery):
             plt.plot([self.xmin, self.xmax], [
                      self.evalues[i], self.evalues[i]], 'k-')
-        for i in range(0, self.nbasis):
+        for i in range(0, self.nbasis, self.plotevery):
             ef = numpy.zeros(self.ngrid)
             ef += self.evalues[i]
             for j in range(0, self.nbasis):
@@ -258,8 +261,8 @@ class PIBSolver:
         plt.plot([self.xmax, self.xmax], [pymin, pymax], 'k-')
         plt.axis([pxmin, pxmax, pymin, pymax])
         plt.title(title)
-        plt.xlabel('$x-x_0$ $(\sqrt{\hbar/m\omega})$')
-        plt.ylabel(r'V ($\hbar\omega$)')
+        plt.xlabel(r'$R$ (Angstrom)')
+        plt.ylabel(r'V (cm$^{-1}$)')
         plt.show()
 
         
