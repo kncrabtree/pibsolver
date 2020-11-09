@@ -39,6 +39,8 @@ class PIBSolver:
         self.re = 0.998
         self.hisotope = 1.007825
         
+        self.make_plots=True
+        
         
         #number of grid points at which to calculate integral
         #must be an odd number. If an even number is given, 1 will be added.
