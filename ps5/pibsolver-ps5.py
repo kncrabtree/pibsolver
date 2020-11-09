@@ -265,7 +265,7 @@ class PIBSolver:
         plt.plot([angles[-1],angles[-1]],[pymin,pymax],'k-')
         plt.axis([pxmin,pxmax,pymin,pymax])
         plt.title(title)
-        plt.xlabel('$\theta$ (degree)')
+        plt.xlabel(r'$\theta$ (degree)')
         plt.ylabel(r'V (cm$^{-1}$)')
         plt.show()
 
