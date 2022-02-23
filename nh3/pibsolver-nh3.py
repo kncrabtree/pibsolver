@@ -122,7 +122,7 @@ class PIBSolver:
               ["ngrid",self.ngrid,"nbasis",self.nbasis],
               ["plotxmin",self.plotxmin,"plotxmax",self.plotxmax],
               ["plotymin",self.plotymin,"plotymax",self.plotymax],
-              ["H Isotope",self.hisotope]]
+              ["hisotope",self.hisotope]]
         
         print(tabulate.tabulate(td))
         
