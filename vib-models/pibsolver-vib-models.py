@@ -26,6 +26,7 @@ import numpy
 from matplotlib import pyplot as plt
 import datetime
 import tabulate
+import pandas as pd
 
 
 class PIBSolver:
@@ -33,8 +34,8 @@ class PIBSolver:
         # --------------------------- VARIABLES  -
         #        ---------------------------
 
-        self.re = 1.749
-        self.mass = (24.*16.)/(24.+16.)
+        self.re = 1.481
+        self.mass = (32.*16.)/(32.+16.)
 
         # minimum x value for partice in a box calculation
         self.xmin = -0.7+self.re
@@ -63,10 +64,10 @@ class PIBSolver:
         self.plotevery = 1
 
         # force constant (N/m)
-        self.fk = 348.5465
+        self.fk = 829.9849
 
         # morse potential dissociation energy (cm-1)
-        self.de = 21373.
+        self.de = 51500.
 
         self.V = self.harmonic
 
@@ -156,22 +157,17 @@ class PIBSolver:
         # in the PIB basis, T|phi(i)> = hbar/2m n^2pi^2/L^2 |phi(i)>
         # Therefore <phi(k)|T|phi(i)> = hbar/2m n^2pi^2/L^2 delta_{ki}
         # Kinetic energy is diagonal
+        idx = numpy.arange(self.nbasis)+1
         kepf = spc.hbar*spc.hbar*numpy.pi**2. / \
             (2.*self.mass*spc.physical_constants['atomic mass constant'][0]*(
                 self.L*1e-10)*(self.L*1e-10)*spc.h*spc.c*100)
-        for i in range(0, self.nbasis):
-            H[i, i] += kepf*(i+1.)*(i+1.)
+        H = kepf*numpy.eye(self.nbasis)*idx*idx
+        na = numpy.newaxis
 
         # now, add in potential energy matrix elements <phi(j)|V|phi(i)>
         # that is, multiply the two functions by the potential at each grid point and integrate
-        for i in range(0, self.nbasis):
-            for j in range(0, self.nbasis):
-                if j >= i:
-                    y = self.pib(x-self.xmin, i+1.)*self.V(x) * \
-                        self.pib(x-self.xmin, j+1.)
-                    H[i, j] += spi.simps(y, x)
-                else:
-                    H[i, j] += H[j, i]
+        H += spi.simps(self.pib(x[na,na,:]-self.xmin,idx[na,:,na])*self.V(x[na,na,:])*self.pib(x[na,na,:]-self.xmin,idx[:,na,na]), x, axis=2)
+
 
         # Solve for eigenvalues and eigenvectors
         self.evalues, self.evectors = linalg.eigh(H)
@@ -180,7 +176,7 @@ class PIBSolver:
         endtime = datetime.datetime.now()
 
         print("Calculation completed in "+str(endtime-starttime))
-        print("Eigenvalues (pb.evalues):")
+        print("First 10 Eigenvalues (to see all, use pb.evalues):")
 
         pl = []
         rowlen = 5
@@ -191,38 +187,36 @@ class PIBSolver:
 
         pl.append(self.evalues[rowlen*(len(pl)):])
 
-        print(tabulate.tabulate(pl, floatfmt=".3f"))
+        #print(tabulate.tabulate(pl, floatfmt=".3f"))
 
         if(make_plots):
             self.plot()
+            
+        df = pd.DataFrame()
+        return df.assign(E=self.evalues[0:10])
 
     def plot(self):
         if len(self.evalues) < 1:
             print("Cannot generate plots because there are no calculated eigenvalues.")
             return
 
-        plt.close('all')
+        self.fig, self.axes = plt.subplots(1,2,figsize=(12,4),dpi=300)
 
-        self.evals_fig = plt.figure(1)
+        
         # Make graph of eigenvalue spectrum
         title = "EV Spectrum, Min={:.4f}, Max={:.4f}, Grid={:d}, Basis={:d}".format(
             self.xmin, self.xmax, self.ngrid, self.nbasis)
 
-        plt.plot(self.evalues, 'ro')
-        plt.xlabel('v')
-        plt.ylabel(r'E (cm$^{-1}$)')
-        plt.title(title)
-        plt.show()
+        self.axes[0].plot(self.evalues, 'ro')
+        self.axes[0].set_xlabel('v')
+        self.axes[0].set_ylabel(r'E (cm$^{-1}$)')
+        self.axes[0].set_title(title)
 
         # Make graph with potential and eigenfunctions
-        self.pot_fig = plt.figure(2)
         title = "Wfns, Min={:.4f}, Max={:.4f}, Grid={:d}, Basis={:d}".format(
             self.xmin, self.xmax, self.ngrid, self.nbasis)
         x = numpy.linspace(self.xmin, self.xmax, self.ngrid)
-        vplot = numpy.zeros(x.size)
-        for i in range(0, x.size):
-            vplot[i] = self.V(x[i])
-        plt.plot(x, vplot)
+        self.axes[1].plot(x, self.V(x))
 
         pxmin = self.plotxmin
         pxmax = self.plotxmax
@@ -238,32 +232,28 @@ class PIBSolver:
         if(pxmin > pxmax):
             pxmin, pxmax = pxmax, pxmin
         if pymax == 0:
-            pymax = 1.5*self.de
+            pymax = 1.25*self.de
         if(pymin > pymax):
             pymin, pymax = pymax, pymin
 
         if self.nbasis > 2:
-            sf = (self.evalues[2]-self.evalues[0])/2.0
+            sf = (self.evalues[2]-self.evalues[0])/2.25
         else:
             sf = 1.
 
-        for i in range(0, self.nbasis, self.plotevery):
-            plt.plot([self.xmin, self.xmax], [
-                     self.evalues[i], self.evalues[i]], 'k-')
-        for i in range(0, self.nbasis, self.plotevery):
-            ef = numpy.zeros(self.ngrid)
-            ef += self.evalues[i]
-            for j in range(0, self.nbasis):
-                ef += self.evectors[j, i]*self.pib(x-self.xmin, j+1)*sf
-            plt.plot(x, ef)
+        self.axes[1].hlines(self.evalues,self.xmin,self.xmax,color='black')
+        idx = numpy.arange(self.nbasis)
+        na = numpy.newaxis
+        self.axes[1].plot( x[:,na],(sf*numpy.sum(self.evectors[idx[na,:],idx[:,na],na]*self.pib(x[na,:]-self.xmin,idx[:,na]+1),axis=1) + self.evalues[idx,na]).T)
 
-        plt.plot([self.xmin, self.xmin], [pymin, pymax], 'k-')
-        plt.plot([self.xmax, self.xmax], [pymin, pymax], 'k-')
-        plt.axis([pxmin, pxmax, pymin, pymax])
-        plt.title(title)
-        plt.xlabel(r'$R$ (Angstrom)')
-        plt.ylabel(r'V (cm$^{-1}$)')
-        plt.show()
+        self.axes[1].vlines([self.xmin,self.xmax],pymin,pymax,color='black')
+        self.axes[1].set_xlim(pxmin,pxmax)
+        self.axes[1].set_ylim(pymin, pymax)
+        self.axes[1].set_title(title)
+        self.axes[1].set_xlabel(r'$R$ (Angstrom)')
+        self.axes[1].set_ylabel(r'V (cm$^{-1}$)')
+        
+        self.fig.tight_layout()
 
         
 print('PIBSolver initialized. Create a new object with "pb = PIBSolver()"')
