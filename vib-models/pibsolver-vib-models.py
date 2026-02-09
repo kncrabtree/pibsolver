@@ -166,7 +166,7 @@ class PIBSolver:
 
         # now, add in potential energy matrix elements <phi(j)|V|phi(i)>
         # that is, multiply the two functions by the potential at each grid point and integrate
-        H += spi.simps(self.pib(x[na,na,:]-self.xmin,idx[na,:,na])*self.V(x[na,na,:])*self.pib(x[na,na,:]-self.xmin,idx[:,na,na]), x, axis=2)
+        H += spi.simpson(self.pib(x[na,na,:]-self.xmin,idx[na,:,na])*self.V(x[na,na,:])*self.pib(x[na,na,:]-self.xmin,idx[:,na,na]), x, axis=2)
 
 
         # Solve for eigenvalues and eigenvectors
@@ -192,8 +192,9 @@ class PIBSolver:
         if(make_plots):
             self.plot()
             
-        df = pd.DataFrame()
-        return df.assign(E=self.evalues[0:10])
+        df = pd.DataFrame({'E':self.evalues[0:10]})
+        df.index.name = 'v'
+        return df
 
     def plot(self):
         if len(self.evalues) < 1:
